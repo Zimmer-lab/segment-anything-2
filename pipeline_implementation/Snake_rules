@@ -22,3 +22,23 @@ rule sam2_segment:
             --downsample_factor {params.downsample_factor} \
             --batch_size {params.batch_size}
         """
+
+rule correct_SAM2_DLC_errors:
+    input:
+        mask_stack = "path/to/input/mask_stack.tiff"  # Adjust this path as needed
+    output:
+        processed_stack = "path/to/output/processed_stack.tiff"  # Adjust this path as needed
+    params:
+        script_path = "path/to/binary_mask_stack_processor.py",  # Adjust this to the actual path of your script
+        lower_threshold = 100,  # Adjust these thresholds as needed
+        upper_threshold = 1000
+    conda:
+        "environment.yml"  # Specify your conda environment file if you're using one
+    shell:
+        """
+        python {params.script_path} \
+            {input.mask_stack} \
+            {output.processed_stack} \
+            {params.lower_threshold} \
+            {params.upper_threshold}
+        """
