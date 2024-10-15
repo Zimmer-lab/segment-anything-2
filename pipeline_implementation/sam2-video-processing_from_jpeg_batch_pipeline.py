@@ -11,7 +11,7 @@ else:
 from PIL import Image
 import numpy as np
 import pandas as pd
-from imutils.scopereader import MicroscopeDataReader
+from imutils import MicroscopeDataReader
 import dask.array as da
 import sys
 import os
