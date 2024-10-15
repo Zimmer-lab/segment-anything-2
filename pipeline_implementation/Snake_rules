@@ -30,15 +30,13 @@ rule correct_SAM2_DLC_errors:
         processed_stack = "path/to/output/processed_stack.tiff"  # Adjust this path as needed
     params:
         script_path = "path/to/binary_mask_stack_processor.py",  # Adjust this to the actual path of your script
-        lower_threshold = 100,  # Adjust these thresholds as needed
-        upper_threshold = 1000
-    conda:
-        "environment.yml"  # Specify your conda environment file if you're using one
+        min_worm_area = 100,  # Adjust these thresholds as needed
+        max_worm_area = 1000
     shell:
         """
         python {params.script_path} \
             {input.mask_stack} \
             {output.processed_stack} \
-            {params.lower_threshold} \
-            {params.upper_threshold}
+            {params.min_worm_area} \
+            {params.max_worm_area}
         """
