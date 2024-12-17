@@ -1,3 +1,35 @@
+'''
+This script processes video frames and generates segmentation masks using the SAM2 model. The main steps are as follows:
+
+1. **CUDA Setup**: The script checks if CUDA (GPU support) is available and selects the device accordingly (GPU if available, otherwise CPU).
+
+2. **DeepLabCut (DLC) CSV Extraction**:
+   - **read_DLC_csv()**: This function reads the DeepLabCut CSV file containing body part tracking data.
+   - It formats the DataFrame by setting the first row as the new column names and creating a MultiIndex with two levels: one for the original column names and one for the body parts (e.g., 'x', 'y', 'likelihood').
+   - It also converts each column's data to numeric values, coercing any errors into NaNs.
+
+3. **Frame Extraction from Video**:
+   - **create_frames_directory()**: The video is split into individual frames, which are saved into subdirectories (batches) to avoid memory overload.
+   - Frames are processed in batches based on the specified batch size.
+
+4. **Coordinate Extraction and Mask Generation**:
+   - **extract_coordinate_by_likelihood()**: This function extracts coordinates (x, y) of specific body parts, based on the highest likelihood values. It calculates the average likelihood across all body parts for each frame and selects the frame with the highest likelihood. In case of a tie, it randomly selects one frame.
+   - The coordinates of the body parts are returned for further processing.
+
+5. **Segmentation with SAM2**:
+   - **segment_object()**: The SAM2 model is used to generate segmentation masks based on the extracted coordinates. The model propagates these masks both forwards and backwards through the video.
+   - The script generates binary masks for each frame and stores them in a dictionary.
+
+6. **Saving Masks**:
+   - The generated masks are processed to ensure they are in the correct format (binary, 8-bit).
+   - The final masks are saved to a TIFF file, sorted by the global frame index.
+
+7. **Cleanup**:
+   - **clear_temp_folder()**: Once the processing is complete, the temporary folder containing the extracted frames is deleted.
+
+The final output is a TIFF file containing the binary masks for each video frame, created using the SAM2 model and the body part coordinates from the DLC data.
+'''
+
 import torch
 
 # Check if CUDA is available and display the GPU information
@@ -11,11 +43,9 @@ else:
 from PIL import Image
 import numpy as np
 import pandas as pd
-import dask.array as da
 import sys
 import os
 import argparse
-import logging
 import tifffile as tiff
 import cv2
 import shutil
