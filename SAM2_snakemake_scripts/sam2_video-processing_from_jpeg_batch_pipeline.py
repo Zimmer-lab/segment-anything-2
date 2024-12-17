@@ -428,7 +428,8 @@ def main(args):
     """
     Process and save the final mask dictionary into a TIFF file.
     """
-    # Sort the dictionary by the global frame index (just in case)
+    # Sort th
+    # e dictionary by the global frame index (just in case)
     sorted_mask_keys = sorted(final_mask_dict.keys())
 
     with tiff.TiffWriter(output_file_path, bigtiff=True) as tif_writer:
