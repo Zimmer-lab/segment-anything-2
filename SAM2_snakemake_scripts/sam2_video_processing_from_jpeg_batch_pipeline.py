@@ -432,19 +432,17 @@ def main(args):
     # e dictionary by the global frame index (just in case)
     sorted_mask_keys = sorted(final_mask_dict.keys())
 
+    # Sort the dictionary by the global frame index
+    sorted_mask_keys = sorted(final_mask_dict.keys())
+    print(f"Total number of masks in final_mask_dict: {len(sorted_mask_keys)}")
+    print(f"Frame indices covered: from {min(sorted_mask_keys)} to {max(sorted_mask_keys)}")
+
     with tiff.TiffWriter(output_file_path, bigtiff=True) as tif_writer:
         for global_frame_idx in sorted_mask_keys:
             mask = final_mask_dict[global_frame_idx]
-            
-            # Process the mask (e.g., convert to binary, 8-bit)
             processed_mask = process_mask(mask)
-            print(f"Saving mask for global frame {global_frame_idx} with shape: {processed_mask.shape}")
-
-            # Ensure the mask is not empty before saving
-            if np.any(processed_mask):
-                tif_writer.write(processed_mask, contiguous=True)
-            else:
-                print(f"Warning: Mask for global frame {global_frame_idx} is empty, skipping.")
+            # Just write the mask, whether it's black or not
+            tif_writer.write(processed_mask, contiguous=True)
     
     print(f"All masks saved to {output_file_path}.")
 
